@@ -1,97 +1,173 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🍎 Fruit Shop E-Commerce App
 
-# Getting Started
+A modern, production-ready React Native mobile application for buying fresh fruits online. Built with clean architecture, smooth animations, and a professional UI/UX design.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## ✨ Features
 
-## Step 1: Start Metro
+- **Landing Page**: Fullscreen carousel with offer banners and smooth autoplay
+- **Authentication**: Login with OTP verification and Sign Up functionality
+- **Dashboard**: Browse fruits by categories with beautiful product cards
+- **Cart System**: Add items to cart (ready for backend integration)
+- **Profile Management**: User profile with settings and logout
+- **Bottom Navigation**: Smooth navigation between Home, Cart, and Profile
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## 🎨 Design Highlights
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **Color Palette**: Green (#2ECC71), Light Greenish White (#F1F8E9), Yellow accent (#FFD54F)
+- **Smooth Animations**: Bounce effects, gradient transitions, and fluid screen navigation
+- **Responsive Layout**: Works seamlessly on both Android and iOS
+- **Modern UI**: Card-based design with rounded corners, shadows, and gradients
 
-```sh
-# Using npm
-npm start
+## 🛠 Tech Stack
 
-# OR using Yarn
-yarn start
+- **React Native** (0.82.1)
+- **TypeScript**
+- **React Navigation** (Native Stack & Bottom Tabs)
+- **AsyncStorage** (for local data persistence)
+- **Axios** (ready for API integration)
+- **React Native Linear Gradient** (for beautiful gradients)
+- **React Native Gesture Handler** (for smooth interactions)
+- **React Native Reanimated** (for advanced animations)
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── Carousel.tsx
+│   ├── FruitCard.tsx
+│   └── Header.tsx
+├── screens/            # App screens
+│   ├── LandingScreen.tsx
+│   ├── AuthScreen.tsx
+│   ├── DashboardScreen.tsx
+│   ├── CartScreen.tsx
+│   └── ProfileScreen.tsx
+├── navigation/         # Navigation configuration
+│   └── AppNavigator.tsx
+├── services/          # API services (ready for backend)
+│   └── api.ts
+├── utils/             # Utility functions
+│   └── storage.ts
+├── constants/         # App constants and dummy data
+│   ├── colors.ts
+│   └── dummy-data.ts
+└── assets/           # Images and static files
 ```
 
-## Step 2: Build and run your app
+## 🚀 Getting Started
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### Prerequisites
+
+- Node.js >= 20
+- React Native development environment set up
+- Android Studio (for Android) or Xcode (for iOS)
+
+### Installation
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. For iOS, install pods:
+```bash
+cd ios
+bundle install
+bundle exec pod install
+cd ..
+```
+
+3. Start Metro bundler:
+```bash
+npm start
+```
+
+4. Run on Android:
+```bash
+npm run android
+```
+
+5. Run on iOS:
+```bash
+npm run ios
+```
+
+## 🔌 API Integration (Ready)
+
+The app is structured to easily integrate with backend APIs. All API endpoints are defined in `src/services/api.ts`:
+
+- **Auth API**: `sendOTP`, `verifyOTP`, `signup`
+- **Products API**: `getAll`, `getById`, `getByCategory`
+- **Cart API**: `getCart`, `addItem`, `removeItem`, `updateQuantity`
+
+Simply update the `API_BASE_URL` in `api.ts` and the app will work with your backend.
+
+## 🎯 Current Features (Static/Dummy Data)
+
+- ✅ Landing carousel with 3 offer banners
+- ✅ Login with OTP (mock: use "1234")
+- ✅ Sign Up form with validation
+- ✅ Dashboard with 6 fruit categories
+- ✅ 6 fruit products with images, prices, and ratings
+- ✅ Add to Cart functionality (local state)
+- ✅ Profile screen with menu items
+- ✅ Logout functionality
+
+## 📱 Demo Flow
+
+1. **Landing Screen**: View carousel → Tap "Explore Now"
+2. **Auth Screen**: Login with phone (any 10 digits) → Get OTP → Enter "1234" → Verify
+3. **Dashboard**: Browse fruits → Filter by category → Add to cart
+4. **Cart**: View cart items (currently shows empty state)
+5. **Profile**: View profile → Access settings → Logout
+
+## 🎨 Customization
+
+### Colors
+Edit `src/constants/colors.ts` to change the app's color scheme.
+
+### Dummy Data
+Edit `src/constants/dummy-data.ts` to modify carousel items, categories, and products.
+
+### Images
+Replace placeholder URLs in `dummy-data.ts` with your own images or add local images to `src/assets/images/`.
+
+## 🔧 Development Notes
+
+- All screens are TypeScript-based for type safety
+- AsyncStorage is used for local data persistence
+- Navigation uses React Navigation v6 with smooth transitions
+- Components are modular and reusable
+- Ready for Redux/Context API integration if needed
+
+## 📦 Build for Production
 
 ### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```bash
+cd android
+./gradlew assembleRelease
 ```
 
 ### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```bash
+cd ios
+xcodebuild -workspace Fruit_Shop_ECommerce.xcworkspace -scheme Fruit_Shop_ECommerce -configuration Release
 ```
 
-Then, and every time you update your native dependencies, run:
+## 🐛 Troubleshooting
 
-```sh
-bundle exec pod install
-```
+If you encounter issues:
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+1. Clear Metro cache: `npm start -- --reset-cache`
+2. Clean Android build: `cd android && ./gradlew clean && cd ..`
+3. Clean iOS build: `cd ios && xcodebuild clean && cd ..`
+4. Reinstall dependencies: `rm -rf node_modules && npm install`
 
-```sh
-# Using npm
-npm run ios
+## 📄 License
 
-# OR using Yarn
-yarn ios
-```
+This project is private and proprietary.
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## 👨‍💻 Developer
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Built with ❤️ for a production-ready fruit e-commerce experience.
