@@ -1,0 +1,1 @@
+global.BASE_URL = 'https://month-shield-oils-prove.trycloudflare.com';

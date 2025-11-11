@@ -8,6 +8,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation/AppNavigator';
 import 'react-native-gesture-handler';
 
+// @ts-ignore
+global.BASE_URL = 'https://month-shield-oils-prove.trycloudflare.com';
+
 function App() {
   return (
     <SafeAreaProvider>

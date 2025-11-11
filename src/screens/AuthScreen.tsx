@@ -17,45 +17,92 @@ import { storage, StorageKeys } from '../utils/storage';
 
 const AuthScreen = ({ navigation }: any) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  // Login fields
+  const [loginEmailOrMobile, setLoginEmailOrMobile] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   
   // Signup fields
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSendOTP = () => {
-    if (phone.length < 10) {
-      Alert.alert('Error', 'Please enter a valid phone number');
+  const handleLogin = async () => {
+    if (!loginEmailOrMobile || !loginPassword) {
+      Alert.alert('Error', 'Please enter email/mobile and password');
       return;
     }
-    // Simulate OTP sending
-    setOtpSent(true);
-    Alert.alert('Success', 'OTP sent to your phone: 1234');
-  };
 
-  const handleVerifyOTP = async () => {
-    if (otp === '1234') {
-      // Mock successful login
-      const userData = { phone, name: name || 'Abhishek', isLoggedIn: true };
-      await storage.setItem(StorageKeys.USER_DATA, userData);
-      navigation.replace('Welcome', { userName: name || 'Abhishek' });
-    } else {
-      Alert.alert('Error', 'Invalid OTP. Use 1234');
+    setLoading(true);
+    try {
+      // @ts-ignore
+      const response = await fetch(`${global.BASE_URL}/users/login/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email_or_mobile: loginEmailOrMobile,
+          password: loginPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const userData = { 
+          ...data, 
+          name: data.full_name || data.name || 'User',
+          isLoggedIn: true 
+        };
+        await storage.setItem(StorageKeys.USER_DATA, userData);
+        navigation.replace('Welcome', { userName: userData.name });
+      } else {
+        Alert.alert('Login Failed', data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Network error. Please try again.');
+      console.error('Login error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSignup = async () => {
-    if (!name || !email || !password || !phone) {
+    if (!name || !email || !mobile || !password) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
-    // Mock successful signup
-    const userData = { phone, name, email, isLoggedIn: true };
-    await storage.setItem(StorageKeys.USER_DATA, userData);
-    navigation.replace('Welcome', { userName: name });
+
+    setLoading(true);
+    try {
+      // @ts-ignore
+      const response = await fetch(`${global.BASE_URL}/users/register/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          mobile: mobile,
+          full_name: name,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', 'Account created! Please login.', [
+          { text: 'OK', onPress: () => setIsLogin(true) }
+        ]);
+      } else {
+        Alert.alert('Signup Failed', data.message || 'Unable to create account');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Network error. Please try again.');
+      console.error('Signup error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,10 +126,7 @@ const AuthScreen = ({ navigation }: any) => {
         <View style={styles.tabContainer}>
           <TouchableOpacity
             style={[styles.tab, isLogin && styles.activeTab]}
-            onPress={() => {
-              setIsLogin(true);
-              setOtpSent(false);
-            }}>
+            onPress={() => setIsLogin(true)}>
             <Text style={[styles.tabText, isLogin && styles.activeTabText]}>
               Login
             </Text>
@@ -100,57 +144,42 @@ const AuthScreen = ({ navigation }: any) => {
           {isLogin ? (
             <>
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>📱 Phone Number</Text>
+                <Text style={styles.label}>📧 Email or Mobile</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your phone number"
-                  keyboardType="phone-pad"
-                  value={phone}
-                  onChangeText={setPhone}
-                  maxLength={10}
+                  placeholder="Enter email or mobile number"
+                  value={loginEmailOrMobile}
+                  onChangeText={setLoginEmailOrMobile}
+                  autoCapitalize="none"
                 />
               </View>
 
-              {!otpSent ? (
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={handleSendOTP}
-                  activeOpacity={0.8}>
-                  <LinearGradient
-                    colors={GRADIENTS.primary}
-                    style={styles.buttonGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}>
-                    <Text style={styles.buttonText}>Get OTP</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              ) : (
-                <>
-                  <View style={styles.inputContainer}>
-                    <Text style={styles.label}>🔐 Enter OTP</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Enter 4-digit OTP"
-                      keyboardType="number-pad"
-                      value={otp}
-                      onChangeText={setOtp}
-                      maxLength={4}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleVerifyOTP}
-                    activeOpacity={0.8}>
-                    <LinearGradient
-                      colors={GRADIENTS.primary}
-                      style={styles.buttonGradient}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}>
-                      <Text style={styles.buttonText}>Verify OTP</Text>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                </>
-              )}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>🔒 Password</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your password"
+                  secureTextEntry
+                  value={loginPassword}
+                  onChangeText={setLoginPassword}
+                />
+              </View>
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleLogin}
+                disabled={loading}
+                activeOpacity={0.8}>
+                <LinearGradient
+                  colors={GRADIENTS.primary}
+                  style={styles.buttonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}>
+                  <Text style={styles.buttonText}>
+                    {loading ? 'Logging in...' : 'Login'}
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
             </>
           ) : (
             <>
@@ -188,27 +217,29 @@ const AuthScreen = ({ navigation }: any) => {
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>📱 Phone Number</Text>
+                <Text style={styles.label}>📱 Mobile Number</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your phone number"
+                  placeholder="Enter your mobile number"
                   keyboardType="phone-pad"
-                  value={phone}
-                  onChangeText={setPhone}
-                  maxLength={10}
+                  value={mobile}
+                  onChangeText={setMobile}
                 />
               </View>
 
               <TouchableOpacity
                 style={styles.button}
                 onPress={handleSignup}
+                disabled={loading}
                 activeOpacity={0.8}>
                 <LinearGradient
                   colors={GRADIENTS.primary}
                   style={styles.buttonGradient}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}>
-                  <Text style={styles.buttonText}>Create Account</Text>
+                  <Text style={styles.buttonText}>
+                    {loading ? 'Creating Account...' : 'Create Account'}
+                  </Text>
                 </LinearGradient>
               </TouchableOpacity>
             </>
