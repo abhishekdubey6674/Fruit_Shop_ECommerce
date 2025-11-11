@@ -9,17 +9,24 @@ import {
   Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { COLORS, GRADIENTS } from '../constants/colors';
+import Icon from '../components/Icon';
+import { COLORS, GRADIENTS, TYPOGRAPHY, RADIUS, SPACING, SHADOWS } from '../constants/colors';
 import { storage } from '../utils/storage';
 
 const ProfileScreen = ({ navigation }: any) => {
   const menuItems = [
-    { id: '1', icon: '📦', title: 'My Orders', subtitle: 'View order history' },
-    { id: '2', icon: '📍', title: 'Addresses', subtitle: 'Manage delivery addresses' },
-    { id: '3', icon: '💳', title: 'Payment Methods', subtitle: 'Saved cards & wallets' },
-    { id: '4', icon: '🔔', title: 'Notifications', subtitle: 'Manage preferences' },
-    { id: '5', icon: '❓', title: 'Help & Support', subtitle: 'Get assistance' },
+    { id: '1', icon: 'bag-outline', title: 'My Orders', subtitle: 'View order history', screen: 'Orders' },
+    { id: '2', icon: 'location-outline', title: 'Addresses', subtitle: 'Manage delivery addresses', screen: 'Addresses' },
+    { id: '3', icon: 'card-outline', title: 'Payment Methods', subtitle: 'Saved cards & wallets', screen: 'Payment' },
+    { id: '4', icon: 'notifications-outline', title: 'Notifications', subtitle: 'Manage preferences', screen: 'Notifications' },
+    { id: '5', icon: 'information-circle-outline', title: 'Help & Support', subtitle: 'Get assistance', screen: 'Help' },
   ];
+
+  const handleMenuPress = (item: any) => {
+    Alert.alert(item.title, `${item.subtitle}\n\nThis feature will be available soon!`, [
+      { text: 'OK', style: 'default' }
+    ]);
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -56,21 +63,25 @@ const ProfileScreen = ({ navigation }: any) => {
         </View>
       </LinearGradient>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 90 }}>
         <View style={styles.menuContainer}>
           {menuItems.map(item => (
             <TouchableOpacity
               key={item.id}
               style={styles.menuItem}
+              onPress={() => handleMenuPress(item)}
               activeOpacity={0.7}>
               <View style={styles.menuIcon}>
-                <Text style={styles.menuIconText}>{item.icon}</Text>
+                <Icon name={item.icon} size={24} color={COLORS.primary} />
               </View>
               <View style={styles.menuContent}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
               </View>
-              <Text style={styles.menuArrow}>›</Text>
+              <Icon name="chevron-forward" size={24} color={COLORS.textTertiary} />
             </TouchableOpacity>
           ))}
         </View>
@@ -94,105 +105,114 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   headerGradient: {
-    paddingTop: 60,
-    paddingBottom: 30,
+    paddingTop: SPACING.xxxl,
+    paddingBottom: SPACING.xxl,
   },
   profileHeader: {
     alignItems: 'center',
   },
   avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 110,
+    height: 110,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.xl,
+    borderWidth: 5,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
   },
   avatarText: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: TYPOGRAPHY.display,
+    fontWeight: TYPOGRAPHY.extrabold,
     color: COLORS.primary,
   },
   userName: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: TYPOGRAPHY.xxxl,
+    fontWeight: TYPOGRAPHY.extrabold,
     color: COLORS.white,
-    marginBottom: 4,
+    marginBottom: SPACING.sm,
+    letterSpacing: -0.5,
   },
   userEmail: {
-    fontSize: 14,
+    fontSize: TYPOGRAPHY.base,
     color: COLORS.white,
-    opacity: 0.9,
+    opacity: 0.95,
+    fontWeight: TYPOGRAPHY.medium,
   },
   content: {
     flex: 1,
-    marginTop: -20,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    marginTop: -SPACING.xl,
+    borderTopLeftRadius: RADIUS.xxl + 4,
+    borderTopRightRadius: RADIUS.xxl + 4,
     backgroundColor: COLORS.background,
+    paddingTop: SPACING.md,
   },
   menuContainer: {
-    padding: 20,
+    padding: SPACING.lg,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    backgroundColor: COLORS.backgroundElevated,
+    padding: SPACING.lg,
+    borderRadius: RADIUS.xl,
+    marginBottom: SPACING.md,
+    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
   },
   menuIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.background,
+    width: 56,
+    height: 56,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.primarySoft,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: SPACING.md,
   },
-  menuIconText: {
-    fontSize: 24,
-  },
+
   menuContent: {
     flex: 1,
   },
   menuTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 2,
+    fontSize: TYPOGRAPHY.lg,
+    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.xs,
+    letterSpacing: -0.2,
   },
   menuSubtitle: {
-    fontSize: 13,
-    color: COLORS.textLight,
+    fontSize: TYPOGRAPHY.sm,
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.medium,
   },
-  menuArrow: {
-    fontSize: 28,
-    color: COLORS.textLight,
-  },
+
   logoutButton: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    backgroundColor: COLORS.white,
-    paddingVertical: 16,
-    borderRadius: 12,
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.xl,
+    backgroundColor: COLORS.errorLight,
+    paddingVertical: SPACING.lg,
+    borderRadius: RADIUS.xl,
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: COLORS.error,
+    ...SHADOWS.sm,
   },
   logoutText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: TYPOGRAPHY.lg,
+    fontWeight: TYPOGRAPHY.bold,
     color: COLORS.error,
+    letterSpacing: 0.3,
   },
   version: {
     textAlign: 'center',
-    color: COLORS.textLight,
-    fontSize: 12,
-    marginTop: 20,
-    marginBottom: 40,
+    color: COLORS.textTertiary,
+    fontSize: TYPOGRAPHY.sm,
+    marginTop: SPACING.xl,
+    marginBottom: SPACING.xxl,
+    fontWeight: TYPOGRAPHY.medium,
   },
 });
 

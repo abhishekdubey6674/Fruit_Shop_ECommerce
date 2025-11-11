@@ -12,7 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { COLORS, GRADIENTS } from '../constants/colors';
+import { COLORS, GRADIENTS, TYPOGRAPHY, RADIUS, SPACING, SHADOWS } from '../constants/colors';
 import { storage, StorageKeys } from '../utils/storage';
 
 const AuthScreen = ({ navigation }: any) => {
@@ -39,9 +39,9 @@ const AuthScreen = ({ navigation }: any) => {
   const handleVerifyOTP = async () => {
     if (otp === '1234') {
       // Mock successful login
-      const userData = { phone, name: 'User', isLoggedIn: true };
+      const userData = { phone, name: name || 'Abhishek', isLoggedIn: true };
       await storage.setItem(StorageKeys.USER_DATA, userData);
-      navigation.replace('Main');
+      navigation.replace('Welcome', { userName: name || 'Abhishek' });
     } else {
       Alert.alert('Error', 'Invalid OTP. Use 1234');
     }
@@ -55,8 +55,7 @@ const AuthScreen = ({ navigation }: any) => {
     // Mock successful signup
     const userData = { phone, name, email, isLoggedIn: true };
     await storage.setItem(StorageKeys.USER_DATA, userData);
-    Alert.alert('Success', 'Account created successfully!');
-    navigation.replace('Main');
+    navigation.replace('Welcome', { userName: name });
   };
 
   return (
@@ -64,11 +63,17 @@ const AuthScreen = ({ navigation }: any) => {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.logo}>🍎</Text>
+          <View style={styles.logoContainer}>
+            <LinearGradient
+              colors={GRADIENTS.primary}
+              style={styles.logoGradient}>
+              <Text style={styles.logo}>🍎</Text>
+            </LinearGradient>
+          </View>
           <Text style={styles.title}>Fruit Shop</Text>
-          <Text style={styles.subtitle}>Fresh & Organic</Text>
+          <Text style={styles.subtitle}>Fresh & Organic Delivered</Text>
         </View>
 
         <View style={styles.tabContainer}>
@@ -221,93 +226,113 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
+    padding: SPACING.lg,
   },
   header: {
     alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 30,
+    marginTop: SPACING.xxl,
+    marginBottom: SPACING.xl,
+  },
+  logoContainer: {
+    marginBottom: SPACING.lg,
+    ...SHADOWS.lg,
+  },
+  logoGradient: {
+    width: 110,
+    height: 110,
+    borderRadius: RADIUS.full,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   logo: {
-    fontSize: 64,
-    marginBottom: 12,
+    fontSize: 60,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 4,
+    fontSize: TYPOGRAPHY.display,
+    fontWeight: TYPOGRAPHY.extrabold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.sm,
+    letterSpacing: -1,
   },
   subtitle: {
-    fontSize: 16,
-    color: COLORS.textLight,
+    fontSize: TYPOGRAPHY.base,
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.medium,
+    letterSpacing: 0.3,
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: COLORS.white,
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 24,
+    backgroundColor: COLORS.backgroundElevated,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.xs,
+    marginBottom: SPACING.xl,
+    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
   },
   tab: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: SPACING.md,
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: RADIUS.lg,
   },
   activeTab: {
     backgroundColor: COLORS.primary,
+    ...SHADOWS.md,
   },
   tabText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.textLight,
+    fontSize: TYPOGRAPHY.base,
+    fontWeight: TYPOGRAPHY.semibold,
+    color: COLORS.textSecondary,
   },
   activeTabText: {
     color: COLORS.white,
+    fontWeight: TYPOGRAPHY.bold,
   },
   formCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: COLORS.backgroundElevated,
+    borderRadius: RADIUS.xxl,
+    padding: SPACING.xl,
+    ...SHADOWS.md,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: SPACING.lg,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 8,
+    fontSize: TYPOGRAPHY.sm,
+    fontWeight: TYPOGRAPHY.semibold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.md,
+    letterSpacing: 0.3,
   },
   input: {
-    backgroundColor: COLORS.background,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: COLORS.text,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md + 2,
+    fontSize: TYPOGRAPHY.base,
+    color: COLORS.textPrimary,
+    borderWidth: 1.5,
+    borderColor: COLORS.borderLight,
+    fontWeight: TYPOGRAPHY.medium,
   },
   button: {
-    borderRadius: 12,
+    borderRadius: RADIUS.lg,
     overflow: 'hidden',
-    marginTop: 8,
+    marginTop: SPACING.md,
+    ...SHADOWS.md,
   },
   buttonGradient: {
-    paddingVertical: 16,
+    paddingVertical: SPACING.lg,
     alignItems: 'center',
   },
   buttonText: {
     color: COLORS.white,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: TYPOGRAPHY.lg,
+    fontWeight: TYPOGRAPHY.bold,
+    letterSpacing: 0.5,
   },
 });
 

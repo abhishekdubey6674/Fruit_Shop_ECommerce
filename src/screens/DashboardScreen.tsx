@@ -10,9 +10,11 @@ import {
   StatusBar,
 } from 'react-native';
 import Header from '../components/Header';
+import SearchBar from '../components/SearchBar';
 import FruitCard from '../components/FruitCard';
+import Icon from '../components/Icon';
 import { CATEGORIES, FRUITS } from '../constants/dummy-data';
-import { COLORS } from '../constants/colors';
+import { COLORS, TYPOGRAPHY, RADIUS, SPACING, SHADOWS } from '../constants/colors';
 
 const DashboardScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -34,7 +36,12 @@ const DashboardScreen = () => {
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
       <Header userName="Abhishek" />
       
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}>
+        <SearchBar placeholder="Search fresh fruits..." />
+        
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Categories</Text>
           <ScrollView
@@ -98,64 +105,78 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
+  scrollContent: {
+    paddingBottom: 100,
+  },
   section: {
-    marginTop: 20,
+    marginTop: SPACING.lg,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 16,
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: COLORS.text,
-    paddingHorizontal: 20,
-    marginBottom: 16,
+    fontSize: TYPOGRAPHY.xxl,
+    fontWeight: TYPOGRAPHY.extrabold,
+    color: COLORS.textPrimary,
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.md,
+    letterSpacing: -0.5,
   },
   sectionSubtitle: {
-    fontSize: 14,
-    color: COLORS.textLight,
+    fontSize: TYPOGRAPHY.sm,
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.semibold,
+    backgroundColor: COLORS.primarySoft,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.lg,
   },
   categoriesContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 8,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.md,
   },
   categoryCard: {
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 20,
-    marginRight: 12,
+    backgroundColor: COLORS.backgroundElevated,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.full,
+    marginRight: SPACING.md,
     alignItems: 'center',
     flexDirection: 'row',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: COLORS.borderLight,
+    ...SHADOWS.sm,
   },
   activeCategoryCard: {
     backgroundColor: COLORS.primary,
-    borderColor: COLORS.primaryDark,
+    borderColor: COLORS.primary,
+    ...SHADOWS.md,
+    transform: [{ scale: 1.02 }],
   },
   categoryIcon: {
-    fontSize: 20,
-    marginRight: 8,
+    fontSize: TYPOGRAPHY.xl,
+    marginRight: SPACING.sm,
   },
   categoryName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.text,
+    fontSize: TYPOGRAPHY.sm,
+    fontWeight: TYPOGRAPHY.semibold,
+    color: COLORS.textPrimary,
+    letterSpacing: 0.3,
   },
   activeCategoryName: {
     color: COLORS.white,
+    fontWeight: TYPOGRAPHY.bold,
   },
   productsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.lg,
   },
 });
 

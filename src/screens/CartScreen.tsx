@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, StatusBar } from 'react-native';
-import { COLORS } from '../constants/colors';
+import { COLORS, TYPOGRAPHY, RADIUS, SPACING, SHADOWS } from '../constants/colors';
 
 const CartScreen = () => {
   return (
@@ -9,7 +9,7 @@ const CartScreen = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Cart</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 90 }]}>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyIcon}>🛒</Text>
           <Text style={styles.emptyTitle}>Your cart is empty</Text>
@@ -28,40 +28,49 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.backgroundElevated,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.lg,
+    ...SHADOWS.sm,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.text,
+    fontSize: TYPOGRAPHY.xxxl,
+    fontWeight: TYPOGRAPHY.extrabold,
+    color: COLORS.textPrimary,
+    letterSpacing: -0.5,
   },
   content: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: SPACING.xl,
   },
   emptyContainer: {
     alignItems: 'center',
+    backgroundColor: COLORS.backgroundElevated,
+    padding: SPACING.xxl,
+    borderRadius: RADIUS.xxl,
+    ...SHADOWS.md,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
   },
   emptyIcon: {
-    fontSize: 80,
-    marginBottom: 20,
+    fontSize: 120,
+    marginBottom: SPACING.xl,
   },
   emptyTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 8,
+    fontSize: TYPOGRAPHY.xxxl,
+    fontWeight: TYPOGRAPHY.extrabold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.md,
+    letterSpacing: -0.5,
   },
   emptySubtitle: {
-    fontSize: 16,
-    color: COLORS.textLight,
+    fontSize: TYPOGRAPHY.base,
+    color: COLORS.textSecondary,
     textAlign: 'center',
+    lineHeight: TYPOGRAPHY.relaxed * TYPOGRAPHY.base,
+    fontWeight: TYPOGRAPHY.medium,
   },
 });
 
