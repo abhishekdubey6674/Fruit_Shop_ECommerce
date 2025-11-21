@@ -2,8 +2,7 @@ import axios from "axios";
 import { storage, StorageKeys } from "../utils/storage";
 
 export const BASE_URL =
-  "https://cbs-inc-electronic-marine.trycloudflare.com";
-
+"https://venue-entertainment-realty-territory.trycloudflare.com"; 
 
 // AXIOS INSTANCE
 const api = axios.create({

@@ -4,7 +4,13 @@ import Toast from 'react-native-toast-message';
 import AppNavigator from './src/navigation/AppNavigator';
 import 'react-native-gesture-handler';
 
-global.BASE_URL = 'https://cbs-inc-electronic-marine.trycloudflare.com';
+// Declare global type
+declare global {
+  var BASE_URL: string;
+}
+
+// Use globalThis instead of global
+globalThis.BASE_URL = 'https://venue-entertainment-realty-territory.trycloudflare.com';
 
 function App() {
   return (
