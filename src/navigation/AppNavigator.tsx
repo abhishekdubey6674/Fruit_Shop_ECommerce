@@ -20,7 +20,14 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainTabs = () => {
-  const { cartCount } = useCart();
+  const { cartItems } = useCart(); // get cart items array
+  const [cartCount, setCartCount] = React.useState(0);
+
+  // Update cart count whenever cartItems changes
+  React.useEffect(() => {
+    const count = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    setCartCount(count);
+  }, [cartItems]);
 
   return (
     <Tab.Navigator
@@ -48,7 +55,8 @@ const MainTabs = () => {
         tabBarItemStyle: {
           paddingVertical: SPACING.xs,
         },
-      }}>
+      }}
+    >
       <Tab.Screen
         name="Home"
         component={DashboardScreen}
@@ -63,23 +71,20 @@ const MainTabs = () => {
         component={CartScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <View>
-              <TabIcon icon="🛒" color={color} focused={focused} />
-              {cartCount > 0 && <NotificationBadge count={cartCount} />}
-            </View>
+            <TabIcon icon="🛒" color={color} focused={focused} />
           ),
-          tabBarBadge: cartCount > 0 ? cartCount : undefined,
-          tabBarBadgeStyle: {
-            backgroundColor: COLORS.error,
-            color: COLORS.white,
-            fontSize: TYPOGRAPHY.xs,
-            fontWeight: TYPOGRAPHY.bold,
-            minWidth: 20,
-            height: 20,
-            borderRadius: RADIUS.full,
-            alignItems: 'center',
-            justifyContent: 'center',
-          },
+          // tabBarBadge: cartCount > 0 ? cartCount : undefined,
+          // tabBarBadgeStyle: {
+          //   backgroundColor: COLORS.error,
+          //   color: COLORS.white,
+          //   fontSize: TYPOGRAPHY.xs,
+          //   fontWeight: TYPOGRAPHY.bold,
+          //   minWidth: 20,
+          //   height: 20,
+          //   borderRadius: RADIUS.full,
+          //   alignItems: 'center',
+          //   justifyContent: 'center',
+          // },
         }}
       />
       <Tab.Screen
@@ -94,6 +99,7 @@ const MainTabs = () => {
     </Tab.Navigator>
   );
 };
+
 
 const TabIcon = ({ icon, color, focused }: { icon: string; color: string; focused: boolean }) => {
   return (
