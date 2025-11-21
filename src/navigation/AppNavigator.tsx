@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,12 +9,19 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import CartScreen from '../screens/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import OrdersScreen from '../screens/OrdersScreen';
+import OrderDetailScreen from '../screens/OrderDetailScreen';
+import CheckoutScreen from '../screens/CheckoutScreen';
+import NotificationBadge from '../components/NotificationBadge';
+import { useCart } from '../hooks';
 import { COLORS, TYPOGRAPHY, RADIUS, SPACING, SHADOWS } from '../constants/colors';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainTabs = () => {
+  const { cartCount } = useCart();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -56,8 +63,23 @@ const MainTabs = () => {
         component={CartScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon icon="🛒" color={color} focused={focused} />
+            <View>
+              <TabIcon icon="🛒" color={color} focused={focused} />
+              {cartCount > 0 && <NotificationBadge count={cartCount} />}
+            </View>
           ),
+          tabBarBadge: cartCount > 0 ? cartCount : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: COLORS.error,
+            color: COLORS.white,
+            fontSize: TYPOGRAPHY.xs,
+            fontWeight: TYPOGRAPHY.bold,
+            minWidth: 20,
+            height: 20,
+            borderRadius: RADIUS.full,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
         }}
       />
       <Tab.Screen
@@ -74,8 +96,6 @@ const MainTabs = () => {
 };
 
 const TabIcon = ({ icon, color, focused }: { icon: string; color: string; focused: boolean }) => {
-  const { View, Text } = require('react-native');
-  
   return (
     <View style={[
       tabIconStyles.container,
@@ -123,6 +143,9 @@ const AppNavigator = () => {
         <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Main" component={MainTabs} />
+        <Stack.Screen name="Orders" component={OrdersScreen} />
+        <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
+        <Stack.Screen name="Checkout" component={CheckoutScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

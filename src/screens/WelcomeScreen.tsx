@@ -17,7 +17,7 @@ interface WelcomeScreenProps {
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation, route }) => {
-  const userName = route.params?.userName || 'Guest';
+  const userName = route.params?.userName || 'Sir/Mam';
   
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -44,7 +44,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation, route }) => {
       }),
     ]).start();
 
-    // Auto navigate after 3 seconds
     const timer = setTimeout(() => {
       navigation.replace('Main');
     }, 3000);

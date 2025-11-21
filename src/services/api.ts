@@ -1,59 +1,157 @@
-import axios from 'axios';
+import axios from "axios";
+import { storage, StorageKeys } from "../utils/storage";
 
-// Placeholder for future API integration
-const API_BASE_URL = 'https://api.fruitshop.com/v1';
+export const BASE_URL =
+  "https://cbs-inc-electronic-marine.trycloudflare.com";
 
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
+
+// AXIOS INSTANCE
+const api = axios.create({
+  baseURL: BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-// Request interceptor for adding auth token
-apiClient.interceptors.request.use(
-  config => {
-    // TODO: Add auth token from AsyncStorage
-    // const token = await AsyncStorage.getItem('authToken');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-    return config;
-  },
-  error => Promise.reject(error)
-);
+// TOKEN INTERCEPTOR
+api.interceptors.request.use(async (config) => {
+  const token = await storage.getItem(StorageKeys.ACCESS_TOKEN);
+  console.log("TOKEN HEADER =", token);
 
-// Response interceptor for handling errors
-apiClient.interceptors.response.use(
-  response => response.data,
-  error => {
-    // Handle common errors
-    if (error.response?.status === 401) {
-      // TODO: Handle unauthorized - redirect to login
-    }
-    return Promise.reject(error);
-  }
-);
+  if (token) config.headers.Authorization = `Bearer ${token}`;
 
-// API endpoints (ready for backend integration)
+  return config;
+});
+
+// AUTH APIs (Registration + Login)
 export const authAPI = {
-  sendOTP: (phone: string) => apiClient.post('/auth/send-otp', { phone }),
-  verifyOTP: (phone: string, otp: string) => apiClient.post('/auth/verify-otp', { phone, otp }),
-  signup: (data: any) => apiClient.post('/auth/signup', data),
+  register: async (data: any) => {
+    const res = await api.post(`/users/register/`, data);
+    return res.data;
+  },
+
+  login: async (data: any) => {
+    const res = await api.post(`/users/login/`, data);
+    return res.data;
+  },
 };
 
-export const productsAPI = {
-  getAll: () => apiClient.get('/products'),
-  getById: (id: string) => apiClient.get(`/products/${id}`),
-  getByCategory: (category: string) => apiClient.get(`/products/category/${category}`),
+// PRODUCTS
+export const productAPI = {
+  getAll: async () => {
+    const res = await api.get(`/food/products/`);
+    return res.data;
+  },
 };
 
+// ADDRESS APIs
+export const addressAPI = {
+  addAddress: async (data: any) => {
+    const res = await api.post(`/food/addresses/`, data);
+    return res.data;
+  },
+
+  getAddresses: async () => {
+    const res = await api.get(`/food/addresses/`);
+    return res.data;
+  },
+
+  updateAddress: async (id: number, data: any) => {
+    const res = await api.put(`/food/addresses/${id}/`, data);
+    return res.data;
+  },
+
+  deleteAddress: async (id: number) => {
+    const res = await api.delete(`/food/addresses/${id}/`);
+    return res.data;
+  },
+};
+
+// CART APIs
 export const cartAPI = {
-  getCart: () => apiClient.get('/cart'),
-  addItem: (productId: string, quantity: number) => apiClient.post('/cart/add', { productId, quantity }),
-  removeItem: (itemId: string) => apiClient.delete(`/cart/${itemId}`),
-  updateQuantity: (itemId: string, quantity: number) => apiClient.put(`/cart/${itemId}`, { quantity }),
+
+  getCart: async () => {
+    const res = await api.get("/food/cart/");
+    return res.data;
+  },
+
+
+  getItem: async (cartItemId: number) => {
+    const res = await api.get(`/food/cart/${cartItemId}/`);
+    return res.data;
+  },
+
+
+  addItem: async (data: { product_id: number; quantity: number }) => {
+    const res = await api.post("/food/cart/add/", data);
+    return res.data;
+  },
+
+
+  updateItem: async (
+    cartItemId: number,
+    action: "increment" | "decrement"
+  ) => {
+    const res = await api.put(`/food/cart/${cartItemId}/update/`, { action });
+    return res.data;
+  },
+
+  
+  updateQuantity: async (cartItemId: number, quantity: number) => {
+    const res = await api.put(`/food/cart/${cartItemId}/`, { quantity });
+    return res.data;
+  },
+
+
+  removeItem: async (cartItemId: number) => {
+    const res = await api.delete(`/food/cart/${cartItemId}/delete/`);
+    return res.data;
+  },
+
+ 
+  clearCart: async () => {
+    const res = await api.delete("/food/cart/clear/");
+    return res.data;
+  },
+
+  
+  checkout: async (addressId: number) => {
+    const res = await api.post(`/food/cart/checkout/`, { address_id: addressId });
+    return res.data;
+  },
+
+  getSummary: async () => {
+    const res = await api.get("/food/cart/summary/");
+    return res.data;
+  },
 };
 
-export default apiClient;
+
+
+// ORDERS APIs
+export const orderAPI = {
+  listOrders: async () => {
+    const res = await api.get(`/food/orders/`);
+    return res.data;
+  },
+
+  orderDetails: async (id: number) => {
+    const res = await api.get(`/food/orders/${id}/`);
+    return res.data;
+  },
+};
+
+// PAYMENT APIs
+export const paymentAPI = {
+  getPayments: async () => {
+    const res = await api.get(`/food/payments/`);
+    return res.data;
+  },
+
+  pay: async (data: any) => {
+    const res = await api.post(`/food/payments/`, data);
+    return res.data;
+  },
+};
+
+export default api;

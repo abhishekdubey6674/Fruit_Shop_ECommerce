@@ -12,292 +12,193 @@ import LinearGradient from 'react-native-linear-gradient';
 import Carousel from '../components/Carousel';
 import Icon from '../components/Icon';
 import { CAROUSEL_DATA } from '../constants/dummy-data';
-import { COLORS, GRADIENTS, TYPOGRAPHY, RADIUS, SPACING, SHADOWS } from '../constants/colors';
+import { COLORS, GRADIENTS, TYPOGRAPHY, RADIUS, SPACING } from '../constants/colors';
 
 const { height } = Dimensions.get('window');
 
 const LandingScreen = ({ navigation }: any) => {
-  const bounceAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
+  const slideAnim = useRef(new Animated.Value(40)).current;
 
   useEffect(() => {
-    // Subtle bounce animation for button
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(bounceAnim, {
-          toValue: -6,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    // Fade in and slide up animation
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 1000,
+        duration: 700,
         useNativeDriver: true,
       }),
       Animated.spring(slideAnim, {
         toValue: 0,
-        friction: 8,
+        friction: 7,
         tension: 40,
         useNativeDriver: true,
       }),
     ]).start();
-  }, [bounceAnim, fadeAnim, slideAnim]);
-
-  const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.96,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 3,
-      tension: 40,
-      useNativeDriver: true,
-    }).start();
-  };
+  }, []);
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      
-      {/* Carousel */}
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      {/* Top Carousel */}
       <Carousel data={CAROUSEL_DATA} />
-      
-      {/* Premium gradient overlay */}
+
+      {/* Bottom Gradient */}
       <LinearGradient
-        colors={[
-          'transparent',
-          'rgba(10, 14, 39, 0.2)',
-          'rgba(10, 14, 39, 0.7)',
-          'rgba(10, 14, 39, 0.95)',
-        ]}
-        locations={[0, 0.4, 0.7, 1]}
+        colors={['transparent', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.95)']}
         style={styles.bottomGradient}
-        pointerEvents="none"
       />
-      
+
       {/* Content */}
-      <Animated.View 
-        style={[
-          styles.bottomContainer,
-          { 
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }]
-          }
-        ]}>
-        
-        {/* Brand Badge */}
-        <View style={styles.brandBadge}>
-          <View style={styles.badgeIcon}>
-            <Icon name="nutrition" size={16} color={COLORS.primary} />
-          </View>
-          <Text style={styles.brandText}>Fresh Market</Text>
+      <Animated.View
+        style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
+      >
+        {/* Badge */}
+        <View style={styles.tag}>
+          <Icon name="nutrition" size={12} color={COLORS.primary} />
+          <Text style={styles.tagText}>Fresh • Organic • Pure</Text>
         </View>
-        
-        {/* Headline */}
-        <Text style={styles.headline}>
-          Fresh & Organic{'\n'}Fruits Delivered
+
+        {/* Title */}
+        <Text style={styles.title}>Freshness Delivered</Text>
+
+        {/* Subtitle */}
+        <Text style={styles.subtitle}>
+          Get handpicked fruits & vegetables brought straight to you — same day.
         </Text>
-        
-        {/* Subheadline */}
-        <Text style={styles.subheadline}>
-          Get farm-fresh fruits delivered to your doorstep.{'\n'}
-          100% organic, handpicked with care.
-        </Text>
-        
-        {/* Features */}
-        <View style={styles.features}>
-          <View style={styles.feature}>
-            <View style={styles.featureIcon}>
-              <Icon name="checkmark-circle" size={16} color={COLORS.success} />
-            </View>
-            <Text style={styles.featureText}>Farm Fresh</Text>
-          </View>
-          <View style={styles.feature}>
-            <View style={styles.featureIcon}>
-              <Icon name="checkmark-circle" size={16} color={COLORS.success} />
-            </View>
-            <Text style={styles.featureText}>Same Day Delivery</Text>
-          </View>
-          <View style={styles.feature}>
-            <View style={styles.featureIcon}>
-              <Icon name="checkmark-circle" size={16} color={COLORS.success} />
-            </View>
-            <Text style={styles.featureText}>100% Organic</Text>
-          </View>
+
+        {/* Features (tight chips) */}
+        <View style={styles.uspRow}>
+          <View style={styles.uspChip}><Text style={styles.uspText}>Farm Fresh</Text></View>
+          <View style={styles.uspChip}><Text style={styles.uspText}>Same Day</Text></View>
+          <View style={styles.uspChip}><Text style={styles.uspText}>Organic</Text></View>
         </View>
-        
-        {/* CTA Button */}
-        <Animated.View 
-          style={{ 
-            transform: [
-              { translateY: bounceAnim },
-              { scale: scaleAnim }
-            ] 
-          }}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('Auth')}
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
-            activeOpacity={1}>
-            <LinearGradient
-              colors={GRADIENTS.primary}
-              style={styles.buttonGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}>
-              <Text style={styles.buttonText}>Get Started</Text>
-              <Icon name="arrow-forward" size={20} color={COLORS.white} />
-            </LinearGradient>
-          </TouchableOpacity>
-        </Animated.View>
-        
-        {/* Skip Link */}
-        <TouchableOpacity 
-          style={styles.skipButton}
-          onPress={() => navigation.navigate('Auth')}>
-          <Text style={styles.skipText}>Skip for now</Text>
+
+        {/* Button */}
+        <TouchableOpacity onPress={() => navigation.navigate('Auth')} activeOpacity={0.8}>
+          <LinearGradient colors={GRADIENTS.primary} style={styles.button}>
+            <Text style={styles.buttonText}>Get Started</Text>
+            <Icon name="arrow-forward" size={22} color={COLORS.white} />
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Skip */}
+        <TouchableOpacity onPress={() => navigation.navigate('Auth')}>
+          <Text style={styles.skip}>Skip for now</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
   );
 };
 
+export default LandingScreen;
+
+// ------------------------------------------------------
+// Styles
+// ------------------------------------------------------
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.black,
   },
+
   bottomGradient: {
     position: 'absolute',
     bottom: 0,
-    left: 0,
-    right: 0,
-    height: height * 0.55,
-  },
-  bottomContainer: {
-    position: 'absolute',
-    bottom: height * 0.12,
-    left: SPACING.lg,
-    right: SPACING.lg,
-    alignItems: 'center',
-  },
-  brandBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.md,
-    borderRadius: RADIUS.full,
-    marginBottom: SPACING.xl,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  badgeIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: RADIUS.full,
-    backgroundColor: COLORS.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: SPACING.md,
+    width: '100%',
+    height: height * 0.42,
   },
 
-  brandText: {
-    color: COLORS.white,
-    fontSize: TYPOGRAPHY.sm,
-    fontWeight: TYPOGRAPHY.bold,
-    letterSpacing: 1,
+  content: {
+    position: 'absolute',
+    bottom: height * 0.10,
+    width: '100%',
+    paddingHorizontal: SPACING.lg,
+    alignItems: 'center',
   },
-  headline: {
-    fontSize: TYPOGRAPHY.display - 8,
-    fontWeight: TYPOGRAPHY.extrabold,
-    color: COLORS.white,
-    textAlign: 'center',
-    marginBottom: SPACING.md,
-    letterSpacing: -1,
-    lineHeight: TYPOGRAPHY.display,
-  },
-  subheadline: {
-    fontSize: TYPOGRAPHY.base,
-    fontWeight: TYPOGRAPHY.medium,
-    color: 'rgba(255, 255, 255, 0.85)',
-    textAlign: 'center',
-    marginBottom: SPACING.xl,
-    lineHeight: TYPOGRAPHY.base * 1.6,
-    paddingHorizontal: SPACING.md,
-  },
-  features: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: SPACING.xl,
-    gap: SPACING.lg,
-  },
-  feature: {
+
+  tag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 217, 163, 0.15)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.full,
+    marginBottom: SPACING.sm,
+    marginTop : SPACING.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  tagText: {
+    color: COLORS.white,
+    marginLeft: 6,
+    fontSize: TYPOGRAPHY.xs,
+    opacity: 0.9,
+  },
+
+  title: {
+    color: COLORS.white,
+    fontSize: TYPOGRAPHY.display - 14,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: SPACING.xs,
+    letterSpacing: -0.5,
+  },
+
+  subtitle: {
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: TYPOGRAPHY.sm,
+    textAlign: 'center',
+    marginBottom: SPACING.lg,
+    lineHeight: 18,
+    maxWidth: '90%',
+  },
+
+  uspRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+
+  uspChip: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 163, 0.3)',
+    borderColor: 'rgba(255,255,255,0.12)',
   },
-  featureIcon: {
-    marginRight: SPACING.xs,
-  },
-  featureText: {
+
+  uspText: {
     color: COLORS.white,
     fontSize: TYPOGRAPHY.xs,
-    fontWeight: TYPOGRAPHY.semibold,
-    letterSpacing: 0.5,
   },
+
   button: {
     borderRadius: RADIUS.full,
-    overflow: 'hidden',
-    width: '100%',
-    ...SHADOWS.xl,
-    shadowColor: COLORS.primary,
-  },
-  buttonGradient: {
-    paddingVertical: SPACING.lg + 2,
-    paddingHorizontal: SPACING.xxl,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.md,
+    gap: 6,
+    marginBottom: SPACING.sm,
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 6,
   },
+
   buttonText: {
     color: COLORS.white,
-    fontSize: TYPOGRAPHY.lg,
-    fontWeight: TYPOGRAPHY.bold,
-    letterSpacing: 0.5,
+    fontSize: TYPOGRAPHY.base,
+    fontWeight: '700',
   },
-  skipButton: {
-    marginTop: SPACING.lg,
-    paddingVertical: SPACING.md,
-  },
-  skipText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: TYPOGRAPHY.sm,
-    fontWeight: TYPOGRAPHY.medium,
-    letterSpacing: 0.5,
+
+  skip: {
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: TYPOGRAPHY.xs,
+    marginTop: SPACING.xs,
   },
 });
-
-export default LandingScreen;

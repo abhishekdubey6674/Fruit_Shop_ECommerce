@@ -18,8 +18,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.greetingContainer}>
-        <Text style={styles.greeting}>Good Morning</Text>
-        <Text style={styles.userName}>{userName}</Text>
+        <Text style={styles.greeting}>Hello !!</Text>
       </View>
       
       <View style={styles.rightContainer}>

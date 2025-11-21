@@ -59,7 +59,17 @@ const FruitCard: React.FC<FruitCardProps> = ({
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}>
         <View style={styles.imageContainer}>
-          <Image source={{ uri: image }} style={styles.image} />
+          <Image
+            source={
+              image
+                ? { uri: `${image}?t=${Date.now()}` }   // disable cache
+                : require('../assets/images/food.jpg')
+            }
+            style={styles.image}
+          />
+
+
+
           <LinearGradient
             colors={['transparent', 'rgba(0,0,0,0.05)']}
             style={styles.imageOverlay}

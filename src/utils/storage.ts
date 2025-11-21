@@ -1,21 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const StorageKeys = {
-  AUTH_TOKEN: 'authToken',
+  ACCESS_TOKEN: 'accessToken',
+  REFRESH_TOKEN: 'refreshToken',
   USER_DATA: 'userData',
   CART: 'cart',
 };
 
 export const storage = {
+  // Save ANY value
   setItem: async (key: string, value: any) => {
     try {
       const jsonValue = JSON.stringify(value);
       await AsyncStorage.setItem(key, jsonValue);
+      // console.log("STORAGE SAVED:", key, value);
     } catch (error) {
       console.error('Error saving to storage:', error);
     }
   },
 
+  // Get ANY value
   getItem: async (key: string) => {
     try {
       const jsonValue = await AsyncStorage.getItem(key);
@@ -26,6 +30,7 @@ export const storage = {
     }
   },
 
+  // Remove any key
   removeItem: async (key: string) => {
     try {
       await AsyncStorage.removeItem(key);
@@ -34,6 +39,7 @@ export const storage = {
     }
   },
 
+  // Clear ALL storage
   clear: async () => {
     try {
       await AsyncStorage.clear();

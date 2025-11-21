@@ -14,6 +14,13 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS, GRADIENTS, TYPOGRAPHY, RADIUS, SPACING, SHADOWS } from '../constants/colors';
 import { storage, StorageKeys } from '../utils/storage';
+import { showToast } from '../utils/toast';
+import { validateEmail, validateMobile, validatePassword, validateFullName } from '../utils/validation';
+
+// Declare global type for BASE_URL
+declare const global: {
+  BASE_URL: string;
+};
 
 const AuthScreen = ({ navigation }: any) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -29,81 +36,131 @@ const AuthScreen = ({ navigation }: any) => {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    if (!loginEmailOrMobile || !loginPassword) {
-      Alert.alert('Error', 'Please enter email/mobile and password');
-      return;
-    }
+ const handleLogin = async () => {
+  if (!loginEmailOrMobile.trim()) {
+    showToast.error('Please enter email ');
+    return;
+  }
 
-    setLoading(true);
-    try {
-      // @ts-ignore
-      const response = await fetch(`${global.BASE_URL}/users/login/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email_or_mobile: loginEmailOrMobile,
-          password: loginPassword,
-        }),
-      });
+  if (!loginPassword.trim()) {
+    showToast.error('Please enter password');
+    return;
+  }
 
-      const data = await response.json();
+  setLoading(true);
+  try {
+    const response = await fetch(`${global.BASE_URL}/users/login/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email_or_mobile: loginEmailOrMobile.trim(),
+        password: loginPassword,
+      }),
+    });
 
-      if (response.ok) {
-        const userData = { 
-          ...data, 
-          name: data.full_name || data.name || 'User',
-          isLoggedIn: true 
-        };
-        await storage.setItem(StorageKeys.USER_DATA, userData);
-        navigation.replace('Welcome', { userName: userData.name });
-      } else {
-        Alert.alert('Login Failed', data.message || 'Invalid credentials');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Network error. Please try again.');
-      console.error('Login error:', error);
-    } finally {
-      setLoading(false);
-    }
+    const data = await response.json();
+
+   if (response.ok) {
+
+  if (!data.tokens?.access) {
+    showToast.error("Token missing in response");
+    return;
+  }
+
+  // Save access + refresh token separately
+  await storage.setItem(StorageKeys.ACCESS_TOKEN, data.tokens.access);
+  await storage.setItem(StorageKeys.REFRESH_TOKEN, data.tokens.refresh);
+
+  // Save whole user object (optional)
+  const userData = {
+    accessToken: data.tokens.access,
+    refreshToken: data.tokens.refresh,
+    isLoggedIn: true,
   };
 
-  const handleSignup = async () => {
-    if (!name || !email || !mobile || !password) {
-      Alert.alert('Error', 'Please fill all fields');
-      return;
+  await storage.setItem(StorageKeys.USER_DATA, userData);
+
+  console.log("TOKEN SAVED =", await storage.getItem(StorageKeys.ACCESS_TOKEN));
+
+  showToast.success("Login successful!", "Welcome");
+  navigation.replace("Welcome");
+}
+ else {
+      showToast.error(data.msg || 'Invalid credentials', 'Login Failed');
     }
 
-    setLoading(true);
-    try {
-      // @ts-ignore
-      const response = await fetch(`${global.BASE_URL}/users/register/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email,
-          mobile: mobile,
-          full_name: name,
-          password: password,
-        }),
-      });
+  } catch (error) {
+    showToast.error('Network error. Please try again.');
+    console.error('Login error:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const data = await response.json();
 
-      if (response.ok) {
-        Alert.alert('Success', 'Account created! Please login.', [
-          { text: 'OK', onPress: () => setIsLogin(true) }
-        ]);
-      } else {
-        Alert.alert('Signup Failed', data.message || 'Unable to create account');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Network error. Please try again.');
-      console.error('Signup error:', error);
-    } finally {
-      setLoading(false);
+ const handleSignup = async () => {
+  const nameValidation = validateFullName(name);
+  if (!nameValidation.isValid) {
+    showToast.error(nameValidation.error || 'Invalid name');
+    return;
+  }
+
+  const emailValidation = validateEmail(email);
+  if (!emailValidation.isValid) {
+    showToast.error(emailValidation.error || 'Invalid email');
+    return;
+  }
+
+  const mobileValidation = validateMobile(mobile);
+  if (!mobileValidation.isValid) {
+    showToast.error(mobileValidation.error || 'Invalid mobile number');
+    return;
+  }
+
+  const passwordValidation = validatePassword(password);
+  if (!passwordValidation.isValid) {
+    showToast.error(passwordValidation.error || 'Invalid password');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const response = await fetch(`${global.BASE_URL}/users/register/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.trim(),
+        mobile: mobile.trim(),
+        full_name: name.trim(),
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+    console.log("SIGNUP RESPONSE:", data);
+
+    if (response.ok) {
+      showToast.success('Account created! Please login.', 'Success');
+      setIsLogin(true);
+
+      setName('');
+      setEmail('');
+      setMobile('');
+      setPassword('');
+    } else {
+      showToast.error(
+        data.msg || data.error || "Unable to create account",
+        "Signup Failed"
+      );
     }
-  };
+  } catch (error) {
+    showToast.error('Network error. Please try again.');
+    console.error('Signup error:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <KeyboardAvoidingView
@@ -116,10 +173,10 @@ const AuthScreen = ({ navigation }: any) => {
             <LinearGradient
               colors={GRADIENTS.primary}
               style={styles.logoGradient}>
-              <Text style={styles.logo}>🍎</Text>
+              <Text style={styles.logo}>🔐</Text>
             </LinearGradient>
           </View>
-          <Text style={styles.title}>Fruit Shop</Text>
+          <Text style={styles.title}>Food Shop</Text>
           <Text style={styles.subtitle}>Fresh & Organic Delivered</Text>
         </View>
 
@@ -144,10 +201,10 @@ const AuthScreen = ({ navigation }: any) => {
           {isLogin ? (
             <>
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>📧 Email or Mobile</Text>
+                <Text style={styles.label}>📧 Email </Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter email or mobile number"
+                  placeholder="Enter email"
                   value={loginEmailOrMobile}
                   onChangeText={setLoginEmailOrMobile}
                   autoCapitalize="none"
